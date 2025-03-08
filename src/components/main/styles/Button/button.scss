@@ -1,0 +1,24 @@
+.btn#btn {
+  font-size: 16px;
+  background-color: $accent;
+  color: $primary;
+  border: 2px solid $primary;
+  font-family: $fontRoboto;
+  font-weight: 600;
+  text-transform: uppercase;
+  transition: all .15s ease-in-out;
+
+  &:focus-visible, &:focus {
+    outline: none;
+  }
+  &:hover {
+    background-color: #{$accent + '8f'};
+  }
+  &:active {
+    background-color: #{$accent + '4d'};
+  }
+  &:disabled {
+    background-color: $disabledColor;
+    cursor: not-allowed;
+  }
+}
