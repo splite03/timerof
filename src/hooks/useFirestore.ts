@@ -3,7 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, addDoc, setDoc, updateDoc, doc } from "firebase/firestore";
 import { reactive, computed } from 'vue'
 import { AllDoors, Door, Doors } from '../types/Doors'
-import { TODAY } from '../constants'
+import { TODAY, clctionName } from '../constants'
 
 // Initialize Firebase
 const state: any = reactive({
@@ -47,18 +47,18 @@ const getSingleDoc = async (collectionName: string, docName: string) => {
 }
 const putInCollection = async (data: Door) => {
     try {
-        return await addDoc(collection(state.firestore, 'doors'), data);
+        return await addDoc(collection(state.firestore, clctionName), data);
     } catch (e) {
         console.error("Error adding document: ", e);
     }
 }
 const updateDocInDays = async (newDoors: any) => {
-    await setDoc(doc(state.firestore, "doors", TODAY), { doors: newDoors });
+    await setDoc(doc(state.firestore, clctionName, TODAY), { doors: newDoors });
 }
 const newDayUpdate = async () => {
     console.log(`Day Update[CREATE EMPTY ARRAY FOR ${TODAY}]`)
 
-    await setDoc(doc(state.firestore, "doors", TODAY), { doors: [] });
+    await setDoc(doc(state.firestore, clctionName, TODAY), { doors: [] });
 }
 
 const test = async () => {

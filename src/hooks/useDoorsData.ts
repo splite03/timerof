@@ -2,7 +2,7 @@ import { getDifferenceOfEach } from 'utils/getDifference';
 import { getAllMetrics } from 'utils/getMetricsFromMilliseconds';
 import { useFirestore } from 'hooks/useFirestore';
 import { computed, ref, unref, watch } from 'vue'
-import { TODAY } from '../constants'
+import { TODAY, clctionName } from '../constants'
 
 export const useDoorsData = () => {
     const {
@@ -52,7 +52,7 @@ export const useDoorsData = () => {
     }
 
     watch(firestore, async () => {
-        allDoors.value = await getDoorsData('doors');
+        allDoors.value = await getDoorsData(clctionName);
 
         await test();
 
