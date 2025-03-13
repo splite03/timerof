@@ -8,14 +8,36 @@
                 {{ TODAY }}
             </h1>
             <p class="main-today__time">
-                <span>{{ currentDayLengthData.string }}</span>
-                <span>{{ workDayLengthNeedToWorkData.string }}</span>
+                <div class="main-today__box">
+                    <span class="main-today__number">{{ currentDayLengthData.string }}</span>
+                    <span class="main-today__description">Отработано</span>
+                </div>
+                <div class="main-today__box">
+                    <span class="main-today__number">{{ workDayLengthNeedToWorkData.string }}</span>
+                    <span class="main-today__description">Нужно сегодня</span>
+                </div>
             </p>
-            <Progress
-                :percent="percent"
-                :dataLoaded="dataLoaded"
-                class="main-today__progress"
-            ></Progress>
+          <p class="main-today__time">
+            <label class="main-today__wrapper">
+              <input
+                  v-model="useOverAndDownTime"
+                  class="main-today__input"
+                  type="checkbox"
+              >
+              <div class="main-today__checkbox"></div>
+            </label>
+            <div class="main-today__box main-today__box--transparent">
+              <span
+                  class="main-today__difference main-today__number"
+                  :class="{
+                    'main-today__difference--loading': !dataLoaded,
+                    [`main-today__difference--${overAndDownTime.overtime ? 'overtime' : 'downtime'}`]: true,
+                  }"
+              >
+                {{ useOverAndDownTime ? getAllMetrics(0).string : overAndDownTime.string }}
+              </span>
+            </div>
+          </p>
             <Button
                 class="main-today__btn"
                 @click="onToggleTimeGoes"
@@ -31,10 +53,11 @@
 <script setup>
     import Progress from 'src/components/main/Progress.vue'
     import { useDoorsData } from 'hooks/useDoorsData.js'
-    import { computed, unref, watch } from 'vue'
+    import {computed, ref, unref, watch} from 'vue'
     import { TODAY, WORK_DAY_IN_MILLISECONDS } from 'constants/index.js'
     import { getAllMetrics } from 'utils/getMetricsFromMilliseconds.js'
     import Button from 'components/main/Button.vue'
+    import {getWorkDaysInMonth, isWeekend} from "utils/timeFuncs.js";
 
     const {
         allDoorsMetrics,
@@ -42,16 +65,22 @@
         dataLoaded,
         buttonTitle,
         onToggleTimeGoes,
+        overAndDownTime,
     } = useDoorsData();
 
-    const currentDayLengthData = computed(() => getAllMetrics(unref(currentDaysDoorsLength)));
-    const workDayLengthNeedToWorkData = computed(() => getAllMetrics(WORK_DAY_IN_MILLISECONDS - unref(currentDaysDoorsLength)));
-    const percent = computed(() => unref(allDoorsMetrics).percent);
+    const useOverAndDownTime = ref(false);
 
-    watch([currentDaysDoorsLength, currentDayLengthData], () => {
-        // console.log('currentDaysDoorsLength', unref(currentDaysDoorsLength));
-        // console.log('currentDayLengthString', unref(currentDayLengthString));
-    }, {immediate: true});
+    watch(useOverAndDownTime, () => {
+      console.log(unref(useOverAndDownTime))
+      console.log(unref(overAndDownTime))
+    })
+    const currentDayLengthData = computed(() => getAllMetrics(unref(currentDaysDoorsLength)));
+    const workDayLengthNeedToWorkData = computed(() => {
+        const workDayLength = WORK_DAY_IN_MILLISECONDS - (unref(useOverAndDownTime) ? unref(overAndDownTime).value : 0);
+        const timeWorked = workDayLength - unref(currentDaysDoorsLength);
+
+        return isWeekend(...TODAY.split('.')) ? getAllMetrics(0) : getAllMetrics(timeWorked > 0 ? timeWorked : 0);
+    });
 </script>
 
 <style lang="scss" scoped>

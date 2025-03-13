@@ -1,9 +1,10 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, addDoc, setDoc, updateDoc, doc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, addDoc, setDoc, updateDoc, doc, getDoc } from "firebase/firestore";
 import { reactive, computed } from 'vue'
-import { AllDoors, Door, Doors } from '../types/Doors'
-import { TODAY, clctionName } from '../constants'
+import {AllDoors, DayData, Door} from '../types/Doors'
+import {TODAY, clctionName} from '../constants'
+import {emptyDayData} from "../constants/data";
 
 // Initialize Firebase
 const state: any = reactive({
@@ -34,16 +35,13 @@ const getDoorsData = async (collectionName: string): Promise<AllDoors | undefine
         const result: AllDoors = {};
 
         querySnapshot.forEach((doc) => {
-            result[doc.id] = doc.data() as {doors: Doors};
+            result[doc.id] = doc.data() as DayData;
         });
 
         return result;
     } catch(e) {
         console.error(`Error reading collection ${collectionName}: `, e)
     }
-}
-const getSingleDoc = async (collectionName: string, docName: string) => {
-
 }
 const putInCollection = async (data: Door) => {
     try {
@@ -52,17 +50,21 @@ const putInCollection = async (data: Door) => {
         console.error("Error adding document: ", e);
     }
 }
-const updateDocInDays = async (newDoors: any) => {
-    await setDoc(doc(state.firestore, clctionName, TODAY), { doors: newDoors });
+const updateDocInDays = async (newData: any, day: string = TODAY) => {
+    await setDoc(doc(state.firestore, clctionName, day), newData);
 }
 const newDayUpdate = async () => {
-    console.log(`Day Update[CREATE EMPTY ARRAY FOR ${TODAY}]`)
-
-    await setDoc(doc(state.firestore, clctionName, TODAY), { doors: [] });
+    await setDoc(doc(state.firestore, clctionName, TODAY), emptyDayData);
 }
 
 const test = async () => {
 
+}
+const getSingleDoc = async (date: string) => {
+    const docRef = doc(state.firestore, clctionName, date);
+    const docSnap = await getDoc(docRef);
+
+    return docSnap.data();
 }
 
 export const useFirestore = () => {
@@ -73,6 +75,7 @@ export const useFirestore = () => {
         initFirestore,
         getDoorsData,
         putInCollection,
+        getSingleDoc,
         ...getters,
     }
 }

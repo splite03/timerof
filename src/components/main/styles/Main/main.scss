@@ -27,6 +27,8 @@
   }
 }
 .main-today {
+  $self: &;
+
   &__title {
     width: 100%;
     font-size: 24px;
@@ -35,7 +37,7 @@
   }
   &__progress {
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
   &__time {
     display: flex;
@@ -44,6 +46,7 @@
     width: 100%;
     font-weight: 600;
     font-size: 18px;
+    margin-bottom: 10px;
   }
   &__btn {
     width: 100%;
@@ -57,5 +60,84 @@
     font-size: 20px;
     color: rgba(21, 21, 21, 0.18) !important;
     opacity: 1 !important;
+  }
+  &__box {
+    background: $secondaryColor;
+    padding: 10px 20px;
+    border-radius: 4px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    &--transparent {
+      background: none;
+    }
+  }
+  &__description {
+    font-size: 12px;
+  }
+  &__number {
+    font-size: 24px;
+    width: 95px;
+    min-width: 95px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  &__difference {
+    font-weight: 600;
+
+    &--overtime {
+      color: #00db00;
+    }
+    &--downtime {
+      color: #ff3c00;
+    }
+    &--loading {
+      color: $primary;
+    }
+  }
+  &__checkbox {
+    $self: &;
+    background-color: $disabledColor;
+    width: 60px;
+    height: 30px;
+    border-radius: 30px;
+    border: 2px solid $primary;
+    position: relative;
+    transition: all .15s ease-in-out;
+    cursor: pointer;
+
+    &::after {
+      $size: 28px;
+      content: '';
+      height: #{$size - 6px};
+      width: #{$size - 6px};
+      background-color: $mainColor;
+      border-radius: 50%;
+      border: 2px solid $primary;
+      display: block;
+      position: absolute;
+      left: 4px;
+      top: 50%;
+      transform: translate(0, -50%);
+      transition: all .15s ease-in-out;
+    }
+  }
+  &__input {
+    display: none;
+
+    &:checked +{
+      .main-today__checkbox {
+        background-color: $progressMainColor;
+
+        &:after {
+          left: 100%;
+          transform: translate(calc(-100% - 4px), -50%);
+        }
+      }
+    }
   }
 }

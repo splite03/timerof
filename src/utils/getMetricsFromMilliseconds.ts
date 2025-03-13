@@ -1,16 +1,20 @@
 import { WORK_DAY_IN_MILLISECONDS } from '../constants'
 
 export const getSeconds = (milliseconds: number) => {
-    const value = Math.floor((milliseconds / 1000) % 60);
+    const value = Math.abs(Math.floor((milliseconds / 1000) % 60));
     return value <= 9 ? `0${value}` : `${value}`;
 }
 export const getMinutes = (milliseconds: number) => {
-    const value = Math.floor((milliseconds / (1000 * 60)) % 60);
+    const value = Math.abs(Math.floor((milliseconds / (1000 * 60)) % 60));
     return value <= 9 ? `0${value}` : `${value}`;
 }
 export const getHours = (milliseconds: number) => {
-    const value = Math.floor((milliseconds / (1000 * 60 * 60)) % 24);
-    return value <= 9 ? `0${value}` : `${value}`;
+    const value = Math.floor((milliseconds / (1000 * 60 * 60)));
+    if (value >= 0) {
+        return value <= 9 ? `0${value}` : `${value}`;
+    }
+
+    return Math.abs(value) <= 9 ? `0${Math.abs(value)}` : `${Math.abs(value)}`;
 }
 export const getPercent = (timestamp: number) => {
     const onePercent = WORK_DAY_IN_MILLISECONDS / 100;
